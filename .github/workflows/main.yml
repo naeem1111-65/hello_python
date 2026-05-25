@@ -52,6 +52,11 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
           test -x "$ANDROID_HOME/build-tools/34.0.0/aidl"
 
+      - name: Link SDK to Buildozer cache
+        run: |
+          mkdir -p ~/.buildozer/android/platform
+          ln -s $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
+
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip
@@ -87,5 +92,4 @@ jobs:
           path: |
             tools/link_downloader_app/bin/*.apk
             bin/*.apk
-
 
