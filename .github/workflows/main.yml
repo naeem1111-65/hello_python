@@ -5,6 +5,10 @@ on:
   push:
     paths:
       - "tools/link_downloader_app/**"
+      - "main.py"
+      - "link_downloader.kv"
+      - "buildozer.spec"
+      - "requirements.txt"
       - ".github/workflows/link-downloader-android.yml"
 
 jobs:
@@ -39,12 +43,29 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install buildozer cython virtualenv
 
+      - name: Find app folder
+        id: app
+        shell: bash
+        run: |
+          if [ -f "tools/link_downloader_app/buildozer.spec" ]; then
+            echo "dir=tools/link_downloader_app" >> "$GITHUB_OUTPUT"
+          elif [ -f "buildozer.spec" ]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          else
+            echo "Could not find buildozer.spec."
+            echo "Repository files:"
+            find . -maxdepth 4 -type f | sort
+            exit 1
+          fi
+
       - name: Build debug APK
-        working-directory: tools/link_downloader_app
+        working-directory: ${{ steps.app.outputs.dir }}
         run: buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: link-downloader-apk
-          path: tools/link_downloader_app/bin/*.apk
+          path: |
+            tools/link_downloader_app/bin/*.apk
+            bin/*.apk
