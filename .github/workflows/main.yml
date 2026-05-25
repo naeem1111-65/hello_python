@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -37,6 +40,11 @@ jobs:
             openjdk-17-jdk \
             unzip \
             zip
+
+      - name: Install Android build tools
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install Buildozer
         run: |
@@ -69,3 +77,4 @@ jobs:
           path: |
             tools/link_downloader_app/bin/*.apk
             bin/*.apk
+
